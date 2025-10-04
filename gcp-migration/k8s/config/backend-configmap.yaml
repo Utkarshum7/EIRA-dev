@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: eira
+data:
+  DB_HOST: "127.0.0.1" # if using Cloud SQL connector sidecar; else use service name
+  DB_PORT: "5432"
+  DB_NAME: "eiradb"
+
+

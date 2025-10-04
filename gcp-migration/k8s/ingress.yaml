@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eira-ingress
+  namespace: eira
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+    # Tell GCP ingress where to check backend health
+    cloud.google.com/backend-config: '{"default": "backend-config"}'
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+      - path: /healthz
+        pathType: Exact
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080

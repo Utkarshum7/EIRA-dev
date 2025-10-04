@@ -1,0 +1,10 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: backend-hc-config   # different name to avoid clash
+  namespace: eira
+spec:
+  healthCheck:
+    requestPath: /healthz
+    port: 8080
+    type: HTTP

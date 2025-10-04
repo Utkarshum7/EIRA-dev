@@ -1,0 +1,16 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: backend-health-config
+  namespace: eira
+spec:
+  healthCheck:
+    checkIntervalSec: 10
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /healthz
+    port: 8080
+  connectionDraining:
+    drainingTimeoutSec: 60

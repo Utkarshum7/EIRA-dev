@@ -1,0 +1,56 @@
+# Terraform
+*.tfvars
+*.tfvars.json
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+*.tfplan
+*.tfplan.*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node modules (if any)
+node_modules/
+
+# Build outputs
+build/
+dist/
+*.dart.js
+
+# Temporary files
+*.tmp
+*.temp
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# Local development
+local/
+tmp/
+
