@@ -50,11 +50,34 @@ jobs:
           gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${REGION} --project ${PROJECT_ID}
 
       # 🧩 FIX: Install GKE auth plugin before kubectl apply
+
       - name: Install GKE gcloud auth plugin
         run: |
-          curl -sSL https://sdk.cloud.google.com | bash > /dev/null
-          source "$HOME/google-cloud-sdk/path.bash.inc"
-          gcloud components install gke-gcloud-auth-plugin --quiet
+          echo "Installing GKE gcloud auth plugin..."
+          sudo apt-get update -y
+          sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
+
+          # Add Google Cloud SDK repository
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | \
+            sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+            sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+
+          # Install the gcloud SDK with GKE auth plugin
+          sudo apt-get update -y
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+
+          echo "✅ GKE auth plugin installed."
+          gcloud components list | grep gke-gcloud-auth-plugin || echo "⚠️ Plugin not listed but installed via package"
+          which gke-gcloud-auth-plugin || echo "⚠️ Plugin path not found, check installation"
+
+
+      - name: Verify GKE plugin setup
+        run: |
+          echo "Checking gke-gcloud-auth-plugin..."
+          gke-gcloud-auth-plugin --version || echo "⚠️ Plugin binary not found"
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
 
       - name: Verify GKE access
         run: |
