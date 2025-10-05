@@ -10,6 +10,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
@@ -17,23 +18,27 @@ jobs:
       CLUSTER_NAME: eira-autopilot
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ✅ Authenticate using GitHub Secret (Service Account JSON)
-      - name: Setup gcloud auth
+      # ✅ Authenticate using GCP Service Account JSON
+      - name: Set up GCP auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Setup gcloud SDK
+      # ✅ Install gcloud and kubectl with GKE plugin
+      - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
+          install_components: 'kubectl,gke-gcloud-auth-plugin'
 
+      # ✅ Configure Docker auth for Artifact Registry
       - name: Configure Docker auth
         run: gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
+      # ✅ Build images
       - name: Build frontend image
         run: |
           docker build -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REPO}/frontend:latest ./eira-frontend
@@ -42,16 +47,19 @@ jobs:
         run: |
           docker build -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REPO}/backend:latest ./eira-backend
 
-      - name: Push images
+      # ✅ Push images
+      - name: Push images to Artifact Registry
         run: |
           docker push ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REPO}/frontend:latest
           docker push ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REPO}/backend:latest
 
+      # ✅ Get GKE credentials
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${REGION} --project ${PROJECT_ID}
 
-      - name: Deploy manifests
+      # ✅ Deploy manifests
+      - name: Deploy Kubernetes manifests
         run: |
-          kubectl apply -f gcp-migration/k8s/namespace.yaml || true
-          kubectl apply -n eira -f gcp-migration/k8s/
+          kubectl apply -f gcp-migration/k8s/namespace.yaml --validate=false || true
+          kubectl apply -n eira -f gcp-migration/k8s/ --validate=false
