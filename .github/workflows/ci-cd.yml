@@ -52,7 +52,14 @@ jobs:
       # 🧩 FIX: Install GKE auth plugin before kubectl apply
       - name: Install GKE gcloud auth plugin
         run: |
+          curl -sSL https://sdk.cloud.google.com | bash > /dev/null
+          source "$HOME/google-cloud-sdk/path.bash.inc"
           gcloud components install gke-gcloud-auth-plugin --quiet
+
+      - name: Verify GKE access
+        run: |
+          gcloud container clusters list
+          kubectl version --client
 
 
       - name: Deploy manifests
