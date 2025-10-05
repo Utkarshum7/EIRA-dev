@@ -60,9 +60,23 @@ jobs:
         run: |
           gcloud container clusters list
           kubectl version --client
+    
+      - name: Debug GKE context
+        run: |
+          kubectl config get-contexts
+          kubectl get nodes -o wide
 
 
       - name: Deploy manifests
         run: |
+          echo "Checking Kubernetes context..."
+          kubectl config current-context || { echo "❌ No active context"; exit 1; }
+
+          echo "Verifying manifest path..."
+          ls -l gcp-migration/k8s/ || { echo "❌ Missing manifest folder"; exit 1; }
+
+          echo "Applying Kubernetes manifests..."
           kubectl apply -f gcp-migration/k8s/namespace.yaml || true
-          kubectl apply -n eira -f gcp-migration/k8s/
+          kubectl apply -n eira -f gcp-migration/k8s/ --recursive --validate=false
+
+          echo "✅ Deployment applied successfully."
