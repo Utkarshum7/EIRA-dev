@@ -1,4 +1,4 @@
-EIRA-project
+# EIRA-project
 
 This repository is a scaffold to orchestrate the EIRA frontend and backend, run locally with Docker Compose, and deploy to Google Cloud via Terraform and Kubernetes.
 
