@@ -6,7 +6,8 @@ Referenced repos:
 - Frontend (Flutter Web): https://github.com/BOCK-HEALTH/EiraUIFlutter.git
 - Backend (Node/Dart + Postgres): https://github.com/BOCK-HEALTH/EiraFlutterBackend.git
 
-Directory layout
+# Directory layout
+
 - eira-frontend/                      Dockerfile, .dockerignore for frontend image
 - eira-backend/                       Dockerfile, .dockerignore for backend image
 - eira-test/                          Local compose for frontend+backend+postgres
@@ -31,7 +32,7 @@ Directory layout
     - ingress.yaml
     - kustomization.yaml (optional)
 
-Prerequisites
+# Prerequisites
 - Docker and Docker Compose
 - Terraform >= 1.6
 - gcloud CLI, kubectl
